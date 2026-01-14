@@ -39,7 +39,7 @@ uv sync
 
 ## Configuration
 
-Training configs can be set via environment variables or `.env` file. See `.env.example` for all options.
+Training configs can be set via environment variables or `.env` file. See `.env.train` for all options.
 
 Key parameters:
 
