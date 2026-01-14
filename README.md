@@ -8,7 +8,7 @@ This project trains an LLM to answer questions using provided documents and cite
 
 ## Dataset
 
-The dataset is built from [ALCE](https://github.com/princeton-nlp/ALCE) (EMNLP 2023) human evaluation data, which contains high-quality question-answer pairs with verified citations.
+The dataset is built from [ALCE](https://github.com/princeton-nlp/ALCE) human evaluation data, which contains high-quality question-answer pairs with verified citations.
 
 **Building the dataset:**
 ```bash
@@ -35,30 +35,18 @@ Final dataset: 55 base + 110 augmented = 165 examples.
 ## Setup
 ```bash
 uv sync
-cp .env.example .env  # optional - defaults work
 ```
-
-## Configuration
-
-Training configs are in `.env.example`. Key parameters:
-
-| Param | Default | Description |
-|-------|---------|-------------|
-| `SFT_MODEL_NAME` | `Qwen/Qwen3-1.7B` | Model to fine-tune |
-| `SFT_NUM_TRAIN_EPOCHS` | 3 | Training epochs |
-| `SFT_LEARNING_RATE` | 2e-5 | Learning rate |
-| `SFT_MAX_AUGMENT` | 2 | Max irrelevant docs to insert |
 
 ## Training
 
-**Local (dry run):**
+**Local:**
 ```bash
-SFT_DRY_RUN=true python -m citation_sft.train
+python -m citation_sft.train
 ```
 
 **SLURM cluster (2 nodes, 4 GPUs):**
 ```bash
-sbatch scripts/train.slurm
+sbatch train.slurm
 ```
 
 Logs are saved to `data/runs/` (TensorBoard format).
@@ -73,7 +61,7 @@ citation_sft/
 │   └── document.txt
 └── sft_data/
     ├── build_dataset.py     # Dataset generation
-    ├── models.py            # SFTExample, InputDoc
+    ├── sft_data.py          # SFTExample, InputDoc
     ├── _alce_models.py      # ALCE data models
     └── _human_eval_models.py
 ```
