@@ -1,11 +1,23 @@
 [project]
-name = "ml-sandbox"
+name = "citation-sft"
 version = "0.0.1"
 authors = [{ name = "David Tokar", email = "1413david@gmail.com" }]
 description = "Local ML sandbox"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "accelerate>=1.12.0",
+    "datasets>=4.4.2",
+    "peft>=0.18.1",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.12.0",
+    "requests>=2.32.5",
+    "ruff>=0.14.11",
+    "tensorboard>=2.20.0",
+    "tqdm>=4.67.1",
+    "transformers>=4.57.5",
+    "wandb>=0.24.0",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -76,4 +88,4 @@ ban-relative-imports = "all"
 force-single-line = true
 lines-between-types = 1
 lines-after-imports = 2
-known-first-party = ["ml_sandbox"]
+known-first-party = ["citation_sft"]

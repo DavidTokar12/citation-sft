@@ -1,0 +1,7 @@
+Instruction: Write an accurate, engaging answer for the given question using only the provided documents. Cite documents using [1], [2], etc. at the end of each sentence that uses information from that document.
+
+{documents}
+
+Question: {question}
+
+Answer:
