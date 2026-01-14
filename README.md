@@ -54,7 +54,7 @@ Key parameters:
 
 **Local:**
 ```bash
-python -m citation_sft.train
+uv run python -m citation_sft.train
 ```
 
 **SLURM cluster (2 nodes, 4 GPUs):**
