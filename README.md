@@ -12,7 +12,7 @@ The dataset is built from [ALCE](https://github.com/princeton-nlp/ALCE) human ev
 
 **Building the dataset:**
 ```bash
-python -m citation_sft.sft_data.build_dataset
+python src/citation_sft/sft_data/build_dataset.py
 ```
 
 This will:
@@ -26,7 +26,7 @@ The dataset is pre-built and committed to this repo - no need to regenerate unle
 
 ### Data Augmentation
 
-To teach the model to ignore irrelevant documents, I augment each example by inserting 1-2 random documents from other questions at random positions. Citation indices in labels are remapped accordingly.
+To teach the model to ignore irrelevant documents, we augment each example by inserting 1-2 random documents from other questions at random positions. Citation indices in labels are remapped accordingly.
 
 Example: Original has docs `[1]-[5]` → Insert irrelevant doc at position 3 → Original `[3]` becomes `[4]`, `[4]` becomes `[5]`, etc.
 
@@ -37,6 +37,19 @@ Final dataset: 55 base + 110 augmented = 165 examples.
 uv sync
 ```
 
+## Configuration
+
+Training configs can be set via environment variables or `.env` file. See `.env.example` for all options.
+
+Key parameters:
+
+| Param | Default | Description |
+|-------|---------|-------------|
+| `SFT_MODEL_NAME` | `Qwen/Qwen3-1.7B` | Model to fine-tune |
+| `SFT_NUM_TRAIN_EPOCHS` | 3 | Training epochs |
+| `SFT_LEARNING_RATE` | 2e-5 | Learning rate |
+| `SFT_MAX_AUGMENT` | 2 | Max irrelevant docs to insert |
+
 ## Training
 
 **Local:**
@@ -46,24 +59,37 @@ python -m citation_sft.train
 
 **SLURM cluster (2 nodes, 4 GPUs):**
 ```bash
+# Update the path in train.slurm first
 sbatch train.slurm
 ```
 
+> Note: Update `cd /path/to/citation-sft` in `train.slurm` to your actual repo path before running.
+
 Logs are saved to `data/runs/` (TensorBoard format).
+```bash
+tensorboard --logdir=data/runs
+```
 
 ## Project Structure
 ```
-citation_sft/
-├── train.py                 # Training script
-├── settings.py              # Pydantic settings
-├── prompts/                 # Prompt templates
-│   ├── citation_sft.txt
-│   └── document.txt
-└── sft_data/
-    ├── build_dataset.py     # Dataset generation
-    ├── sft_data.py          # SFTExample, InputDoc
-    ├── _alce_models.py      # ALCE data models
-    └── _human_eval_models.py
+citation-sft/
+├── src/
+│   └── citation_sft/
+│       ├── train.py                 # Training script
+│       ├── settings.py              # Pydantic settings
+│       ├── prompts/                 # Prompt templates
+│       │   ├── citation_sft.txt
+│       │   └── document.txt
+│       └── sft_data/
+│           ├── build_dataset.py     # Dataset generation
+│           ├── sft_data.py          # SFTExample, InputDoc
+│           ├── _alce_models.py      # ALCE data models
+│           └── _human_eval_models.py
+├── data/
+│   └── sft_dataset.json             # Pre-built dataset (committed)
+├── train.slurm                      # SLURM submission script
+├── .env.example                     # Example configuration
+└── pyproject.toml
 ```
 
 ## References

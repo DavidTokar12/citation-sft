@@ -20,15 +20,16 @@ class Settings(BaseSettings):
     weight_decay: float
     warmup_ratio: float
     max_length: int
-    
+
     # Logging & saving
     logging_steps: int
     eval_strategy: str
     save_strategy: str
     save_total_limit: int
-    
+
     # Dataset split
     test_questions: int
     seed: int
+
 
 settings = Settings()

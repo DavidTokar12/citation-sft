@@ -19,6 +19,8 @@ from citation_sft.sft_data.sft_data import InputDoc
 from citation_sft.sft_data.sft_data import SFTExample
 
 
+random.seed(42)
+
 DATA_DIR = settings.data_dir
 MAX_AUGMENT = settings.max_augment
 
@@ -93,7 +95,15 @@ def get_short_answers(alce: _ALCEExample) -> list[str]:
 
 
 def find_irrelevant_doc(alce: _ALCEExample, all_docs: list, max_attempts: int = 100):
+    """
+    Find a document irrelevant to this question.
+
+    Note: Uses substring matching which is shallow.
+    For production I would use something like GTR embeddings (gtr-t5-large) as used in the ALCE paper(it's a 2023 paper so something more recent probably exists)
+    to compute semantic similarity and filter out related documents.
+    """
     short_answers = get_short_answers(alce)
+
     current_doc_ids = {d.id for d in alce.docs[:5]}
 
     for _ in range(max_attempts):
@@ -102,13 +112,8 @@ def find_irrelevant_doc(alce: _ALCEExample, all_docs: list, max_attempts: int = 
             continue
         if not any(ans in doc.text.lower() for ans in short_answers):
             return doc
+
     return None
-
-
-def remap_citations(label: str, insert_pos: int) -> str:
-    for i in range(5, insert_pos - 1, -1):
-        label = re.sub(rf"\[{i}\]", f"[{i + 1}]", label)
-    return label
 
 
 def to_sft_example(alce: _ALCEExample, human: _HumanEvalExample) -> SFTExample:
@@ -127,18 +132,26 @@ def to_sft_example(alce: _ALCEExample, human: _HumanEvalExample) -> SFTExample:
     )
 
 
+def remap_citations(label: str, insert_pos: int, max_citation: int) -> str:
+    for i in range(max_citation, insert_pos - 1, -1):
+        label = re.sub(rf"\[{i}\]", f"[{i + 1}]", label)
+    return label
+
+
 def augment_example(
     example: SFTExample, all_docs: list, alce: _ALCEExample, num_insert: int
 ) -> SFTExample | None:
     docs = [InputDoc(index=d.index, title=d.title, text=d.text) for d in example.docs]
     label = example.label
+    max_citation = len(docs)  # starts at 5
 
     for _ in range(num_insert):
         irr_doc = find_irrelevant_doc(alce, all_docs)
         if irr_doc is None:
             return None
         insert_pos = random.randint(1, len(docs) + 1)
-        label = remap_citations(label, insert_pos)
+        label = remap_citations(label, insert_pos, max_citation)
+        max_citation += 1
         new_doc = InputDoc(index=insert_pos, title=irr_doc.title, text=irr_doc.text)
         docs.insert(insert_pos - 1, new_doc)
         for i, d in enumerate(docs):
