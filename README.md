@@ -12,7 +12,7 @@ The dataset is built from [ALCE](https://github.com/princeton-nlp/ALCE) human ev
 
 **Building the dataset:**
 ```bash
-python src/citation_sft/sft_data/build_dataset.py
+uv run python src/citation_sft/sft_data/build_dataset.py
 ```
 
 This will:
