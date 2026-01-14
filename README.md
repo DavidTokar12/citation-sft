@@ -88,7 +88,7 @@ citation-sft/
 ├── data/
 │   └── sft_dataset.json             # Pre-built dataset (committed)
 ├── train.slurm                      # SLURM submission script
-├── .env.example                     # Example configuration
+├── .env.train                       # Train configuration
 └── pyproject.toml
 ```
 
